@@ -4,10 +4,10 @@ import com.batuhan.ecommerce.entity.Product;
 import com.batuhan.ecommerce.model.ProductResponse;
 import com.batuhan.ecommerce.repository.ProductRepository;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Log4j2
@@ -21,22 +21,31 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public ProductResponse getProductById(Integer productId) {
         log.info("Fetching Product by Id: {}", productId);
-        Product product = productRepository.findById(productId).orElseThrow(
-                () -> new RuntimeException("Product doesn't exist."));
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product doesn't exist."));
         ProductResponse productResponse = convertToProductResponse(product);
         log.info("Fetched Products by Product Id: {}", productId);
         return productResponse;
     }
 
     @Override
-    public List<ProductResponse> getAllProducts() {
+    public Page<ProductResponse> getAllProducts(Pageable pageable, Integer brandId, Integer typeId, String keyword) {
         log.info("Fetching All Products.");
-        List<Product> products = productRepository.findAll();
-        List<ProductResponse> productResponses = products.stream()
-                .map(this::convertToProductResponse)
-                .collect(Collectors.toList());
+        Specification<Product> spec = Specification.where(null);
+        if (brandId != null) {
+            spec = spec.and(((root, query, criteriaBuilder)
+                    -> criteriaBuilder.equal(root.get("brand").get("id"), brandId)));
+        }
+        if (typeId != null) {
+            spec = spec.and((root, query, criteriaBuilder)
+                    -> criteriaBuilder.equal(root.get("type").get("id"), typeId));
+        }
+        if (keyword != null && !keyword.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder)
+                    -> criteriaBuilder.like(root.get("name"), "%" + keyword + "%"));
+        }
         log.info("Fetched All Products.");
-        return productResponses;
+        return productRepository.findAll(spec, pageable).map(this::convertToProductResponse);
     }
 
     private ProductResponse convertToProductResponse(Product product) {
