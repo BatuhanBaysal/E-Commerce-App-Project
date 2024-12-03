@@ -1,3 +1,4 @@
+
 server:
   port: 8081
 
@@ -13,9 +14,12 @@ spring:
       ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-      properties:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
 
-        hibernate:
-          dialect: org.hibernate.dialect.MySQL8Dialect
-          format_sql: true
-    open-in-view: false
+  data:
+    redis:
+      host: localhost
+      port: 6379
