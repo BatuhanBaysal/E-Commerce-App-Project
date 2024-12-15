@@ -19,6 +19,7 @@ export default function BasketPage(){
     const decrementItem = (productId: number, quantity: number = 1)=>{
         BasketActions.decrementItemQuantity(productId, quantity, dispatch);
     };
+
     const incrementItem = (productId: number, quantity: number = 1)=>{
         BasketActions.incrementItemQuantity(productId, quantity, dispatch);
     };
@@ -40,7 +41,9 @@ export default function BasketPage(){
             minimumFractionDigits: 2
         }).format(price);
     };
+
     if(!basket || basket.items.length ===0 ) return <Typography variant="h3">Your basket is empty. Please add few items!!!</Typography>
+    
     return (
         <>
         <TableContainer component={Paper}>
@@ -85,6 +88,7 @@ export default function BasketPage(){
                 </TableBody>
             </Table>
         </TableContainer>
+
         <Box mt={2} p={2} bgcolor="background.paper" borderRadius={4}>
             <BasketSummary/>
             <Button
