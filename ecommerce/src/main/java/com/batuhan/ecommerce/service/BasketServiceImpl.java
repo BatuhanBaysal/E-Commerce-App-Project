@@ -55,7 +55,7 @@ public class BasketServiceImpl implements BasketService{
     }
 
     @Override
-    public void deleteBasket(String basketId) {
+    public void deleteBasketById(String basketId) {
         log.info("Deleting Basket by Id: {}", basketId);
         basketRepository.deleteById(basketId);
         log.info("Deleted Basket by Id: {}", basketId);
